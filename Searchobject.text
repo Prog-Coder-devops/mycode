@@ -1,0 +1,84 @@
+Step1
+
+<aura:component controller = "LC_CreateAccountRecord" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+ <!--Component Attribute-->
+    <aura:attribute name ="Myinputvalue" type = "string" access = "global"/>
+    <aura:attribute name ="lstAccount" type = "List" access = "global"/>
+    <aura:attribute name ="ShowResult" type = "boolean" default = "false" access = "global"/>
+    
+    <!--Component Body-->
+    <div class = "slds-box slds-p-top_x-large">
+        <div>
+            <h1><strong>SEARCH ACCOUNT</strong></h1>
+        </div><br/>
+        <label><strong>Search Account</strong></label>
+        <lightning:input  value = "{!v.Myinputvalue}" onchange="{!c.handelSearch}" type = "text" variant="label-hidden" label = "Search Account" placeholder = "Enter Account Name"/><br/>
+        <lightning:button label = "Search Account" variant = "Brand" onclick = "{!c.handelSearch}"/>
+    </div><br/>
+    <aura:if isTrue = "{!v.ShowResult}">
+        <aura:if isTrue = "{!v.lstAccount.length != 0}">
+            <lightning:layout multipleRows="true">
+                <lightning:layoutItem size="6" padding="around-small">
+                    <div class="custom-box ">
+                            <aura:iteration items = "{!v.lstAccount}" var = "accRec">
+                                <lightning:card title = "{!accRec.Name}">
+                                    Id :{!accRec.Id} <br/>
+                                    Rating : {!accRec.Rating}
+                                </lightning:card>
+                            </aura:iteration>
+                        </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+        </aura:if>
+    </aura:if>
+</aura:component>
+
+Step2
+
+@AuraEnabled
+public static List<Account> searchAccountRec (string searchKey){
+    list<Account> lstAcc = New List<Account>();
+    String searchText = '%'+searchKey+'%'; 
+    lstAcc = [Select Id,Name,Rating From Account Where Name Like :searchText];
+    return  lstAcc; 
+}
+=============================
+
+Step3
+
+({
+ myAction : function(component, event, helper) {
+  
+ },
+    handelSearch : function(component, event, helper){
+        debugger;
+        component.set("v.ShowResult", true);
+        helper.handelSearchHelper(component, event, helper);
+    }
+})
+
+===================================
+
+Step4
+
+({
+    handelSearchHelper : function(component, event, helper) {
+        var myvalue = component.get("v.Myinputvalue");
+        var action = component.get('c.searchAccountRec');
+        action.setParams({
+            "searchKey": myvalue
+        })
+        action.setCallback(this,function(response){
+            var state = response.getState();
+            if(state === 'SUCCESS'){
+                var result = response.getReturnValue();
+                component.set("v.lstAccount",result);
+                
+            }else{
+                alert('Error : Something Went Wrong');
+            }
+            
+        });
+        $A.enqueueAction(action);
+    }
+})

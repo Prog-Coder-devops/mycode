@@ -1,0 +1,60 @@
+Step1
+
+<aura:component controller="LC_CreateAccountRecordApex" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name = "AccountRec" type = "Account" default ="{'sobjectType':'Account','Name':'','AnnualRevenue':'','Phone':''}"/>
+
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_1-of-2">
+            
+            <span>
+            <lightning:card title="Account Record Form">
+                <form>
+                    <lightning:input label="Account Name" required="true" value="{!v.AccountRec.Name}"/>
+                    <lightning:input label="Annual Revenue" required="true"  value="{!v.AccountRec.AnnualRevenue}"/>  
+                    <lightning:input label="Phone Number" required="true"  value="{!v.AccountRec.Phone}"/>
+
+                    <lightning:button label="Insert" variant="brand"  onclick="{!c.createAccount}"/>
+                </form>
+            </lightning:card>
+            </span>
+        </div>
+    </div>
+</aura:component>
+
+Step2
+public class LC_CreateAccountRecordApex {
+    @auraEnabled
+    public static Account createAccRec(Account dataFromAura){
+        
+        insert dataFromAura;
+        return dataFromAura;
+    }
+}
+
+Step3
+({
+    createAccount : function(component, event, helper) {
+        helper.createAccountHelper(component, event, helper);
+    }
+})
+
+Step4
+({
+    createAccountHelper : function(component, event, helper) {
+        var myvalues = component.get(v.AccountRec);
+        var action =    component.get(c.createAccRec);
+        action.setParams({
+            'dataFromAura': myvalues
+    
+        });
+        action.setCallback(this,function(response){
+            var state = response.getState();
+            if(state==="SUCCESS"){
+                alert('Payment Succesfully');
+            }else{
+                alert('Payment Not Succesfully');
+            }
+        });
+        $A.enqueueAction(action);
+    }
+})

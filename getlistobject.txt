@@ -1,0 +1,72 @@
+Step1
+
+public class LC_CommonHelper {
+  @AuraEnabled
+    public static list<Account> getAllAccountRecord(){
+        List<Account> lstAccount = [SELECT Id,Phone,Name,Rating FROM Account LIMIT 5];
+        return lstAccount;
+    }
+}
+
+Step 2
+<aura:component controller="LC_CommonHelper" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="myAccount" type="List" access="global"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div class="slds-box">
+        <table class="slds-border_bottom">
+            <thead>
+                <tr>
+                    <th scope="col"><div class="slds-turncate">ID</div></th>
+                    <th scope="col"><div class="slds-turncate">Name</div></th>
+                    <th scope="col"><div class="slds-turncate">Phone</div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.myAccount}" var="myfecthrecord">
+                    <tr>
+                        <td scope="row"><div class="slds-turncate">{!myfecthrecord.Id}</div></td>
+                        <td scope="row"><div class="slds-turncate">{!myfecthrecord.Name}</div></td>
+                        <td scope="row"><div class="slds-turncate">{!myfecthrecord.Phone}</div></td>
+                    </tr>
+                </aura:iteration>    
+            </tbody>
+        </table>
+    
+    </div>
+
+</aura:component>
+
+Step 3
+
+({
+  
+    //Doinit fucntion is ued on page loaded
+    doInit : function(component, event, helper) {
+    //alert('Page load');
+       
+        helper.fetchmyAccountRec(component, event, helper);
+  }
+})
+
+Step 4
+({
+    fetchmyAccountRec : function(component, event, helper) {
+    alert('helper');
+        
+        var action = component.get("c.getAllAccountRecord");
+        debugger;
+        action.setCallback(this, function(response){
+            var state = reponse.getState();
+            alert(state);
+      
+            if(state==="SUCCESS"){
+                var result = response.getReturnValue();
+                component.set("v.myAccount", result); 
+                
+            }else{
+                alert('No record found');
+            }
+        });
+        $A.enqueueAction(action);
+  }
+})
