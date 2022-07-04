@@ -41,8 +41,8 @@ Step3
 Step4
 ({
     createAccountHelper : function(component, event, helper) {
-        var myvalues = component.get(v.AccountRec);
-        var action =    component.get(c.createAccRec);
+        var myvalues = component.get("v.AccountRec");
+        var action =    component.get("c.createAccRec");
         action.setParams({
             'dataFromAura': myvalues
     
