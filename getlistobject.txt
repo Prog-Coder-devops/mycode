@@ -56,7 +56,7 @@ Step 4
         var action = component.get("c.getAllAccountRecord");
         debugger;
         action.setCallback(this, function(response){
-            var state = reponse.getState();
+            var state = response.getState();
             alert(state);
       
             if(state==="SUCCESS"){
